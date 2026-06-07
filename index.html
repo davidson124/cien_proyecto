@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskFlow</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app">
@@ -13,10 +14,10 @@
         </header>
         <main>
             <section class="task-form">
-                <h2>add New Tasks</h2>
+                <h2>Add New Tasks</h2>
                 <form id="taskForm">
-                    <input type="text" id="taskTitle" placeholder="Task Title" required>
-                    <textarea id="taskDescription" placeholder="Task Description"></textarea>
+                    <input type="text" id="taskTitle" placeholder="Task Title" maxlength="45" required>
+                    <textarea id="taskDescription" placeholder="Task Description" maxlength="200" required></textarea>
                     <button type="submit">Add Task</button>
                 </form>
             </section>
