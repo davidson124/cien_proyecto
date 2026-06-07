@@ -89,3 +89,35 @@ button:hover{
     background: var(--primary-hover);
     transform: translateY(-2px);
 }
+.task-card{
+    background: #0F172A;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
+}
+.task-card h3{
+    margin-bottom: 0.75rem;
+}
+.task-card p{
+    color: var(--secondary-text);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+.task-actions{
+    display: flex;
+    gap: 1rem;
+}
+.complete-btn{
+    background: var(--success-color);
+}
+.complete-btn:hover{
+    transform: translateY(-2px);
+}
+.delete-btn{
+    background: var(--danger-color);
+}
+.delete-btn:hover{
+    transform: translateY(-2px);
+}
+
