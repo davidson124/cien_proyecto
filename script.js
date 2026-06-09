@@ -1,6 +1,14 @@
 const taskForm = document.getElementById("taskForm");
 const tasks = [];
+
 function renderTasks(){
+
+    tasksContainer.addEventListener("click", (event) => {
+        if(event.target.classList.contains("delete-btn")) {
+            const taskId = Number(event.target.dataset.id);
+            deleteTask(taskId);
+        }
+    })
 
     taskContainer.innerHTML = ''; 
     tasks.forEach((task) => {
@@ -10,11 +18,21 @@ function renderTasks(){
             <p>${task.description}</p>
             <div class="task-actions">
                 <button class="complete-btn">Complete</button>
-                <button class="delete-btn">Delete</button>
+                <button class="delete-btn" data-id="${task.id}">Delete</button>
             </div>
         </div>
         `;
     });
+
+}
+
+function deleteTask(id) {
+    const updatedTasks = tasks.filter((task) => {
+        return task.id !== id;
+    });
+    tasks.length = 0; 
+    tasks.push(...updatedTasks);
+    renderTasks();
 
 }
 
