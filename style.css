@@ -37,6 +37,29 @@ body{
 .header p{
     color: var(--secondary-text)
 }
+.stats{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.stat-card{
+    background: var(--card-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+.stat-card h3{
+    color: var(--secondary-text);
+    margin-bottom: .5rem;
+}
+.stat-card p{
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
 .task-form,
 .task-list{
     background: var(--card-color);
@@ -130,4 +153,8 @@ button:hover{
 .completed p{
     text-decoration: line-through;
 }
-
+@media(max-width: 760px){
+    .stats{
+        grid-template-columns: 1fr;
+    }
+}

@@ -29,6 +29,17 @@ function renderTasks(){
         `;
     });
 
+    updateStats();
+
+}
+
+function updateStats(){
+
+    totalTasks.textContent = tasks.length;
+    const completed = tasks.filter((task) => task.completed).length;
+    completedTasks.textContent = completed;
+    pendingTasks.textContent = tasks.length - completed;
+
 }
 
 function deleteTask(id) {
@@ -53,6 +64,9 @@ function toggleTask(id){
 const taskTitle = document.getElementById("taskTitle");
 const taskDescription = document.getElementById("taskDescription");
 const taskContainer = document.getElementById("tasksContainer");
+const totalTasks = document.getElementById("totalTasks");
+const completedTasks = document.getElementById("completedTasks");
+const pendingTasks = document.getElementById("pendingTasks");
 
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
