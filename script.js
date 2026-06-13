@@ -1,5 +1,7 @@
 const taskForm = document.getElementById("taskForm");
-const tasks = [];
+let tasks = JSON.parse(
+    localStorage.getItem('tasks')
+) || [];
 
 function renderTasks(){
 
@@ -48,9 +50,11 @@ function deleteTask(id) {
     });
     tasks.length = 0; 
     tasks.push(...updatedTasks);
+    saveTasks();
     renderTasks();
 
-}
+};
+
 
 function toggleTask(id){
 
@@ -58,8 +62,11 @@ function toggleTask(id){
     if(task){
         task.completed = !task.completed;
     }
+    saveTasks();
     renderTasks();
 };
+
+
 
 const taskTitle = document.getElementById("taskTitle");
 const taskDescription = document.getElementById("taskDescription");
@@ -67,6 +74,10 @@ const taskContainer = document.getElementById("tasksContainer");
 const totalTasks = document.getElementById("totalTasks");
 const completedTasks = document.getElementById("completedTasks");
 const pendingTasks = document.getElementById("pendingTasks");
+
+function saveTasks(){
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
 
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -77,9 +88,10 @@ taskForm.addEventListener('submit', (event) => {
         completed: false
     };
     tasks.push(task);
+    saveTasks();
     renderTasks();
     taskForm.reset();
     console.log(tasks);
 });
-
+renderTasks();
 
