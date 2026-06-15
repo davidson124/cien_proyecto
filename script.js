@@ -1,25 +1,53 @@
-const taskForm = document.getElementById("taskForm");
 let tasks = JSON.parse(
     localStorage.getItem('tasks')
 ) || [];
 
+let searchTerm = '';
+let currentFilter = 'all';
+
+const taskForm = document.getElementById("taskForm");
+const taskTitle = document.getElementById("taskTitle");
+const taskDescription = document.getElementById("taskDescription");
+const tasksContainer = document.getElementById("tasksContainer");
+const searchInput = document.getElementById("searchInput");
+const totalTasks = document.getElementById("totalTasks");
+const completedTasks = document.getElementById("completedTasks");
+const pendingTasks = document.getElementById("pendingTasks");
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+searchInput.addEventListener('input', (event) => {
+    searchTerm = event.target.value.toLowerCase();
+    renderTasks();
+});
+
+filterButtons.forEach((button) => {
+    button.addEventListener('click', ()=>{
+        currentFilter = button.dataset.filter;
+        renderTasks();
+    });
+});
+
+function saveTasks(){
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
 function renderTasks(){
 
-    tasksContainer.addEventListener("click", (event) => {
+    tasksContainer.innerHTML = ''; 
 
-        if(event.target.classList.contains("complete-btn")) {
-            const taskId = Number(event.target.dataset.id);
-            toggleTask(taskId);
-        }
-        if(event.target.classList.contains("delete-btn")) {
-            const taskId = Number(event.target.dataset.id);
-            deleteTask(taskId);
-        }
+    let filteredTasks = tasks.filter((task) => {
+        return task.title.toLowerCase().includes(searchTerm);
     });
 
-    taskContainer.innerHTML = ''; 
-    tasks.forEach((task) => {
-        taskContainer.innerHTML += `
+    if(currentFilter === 'completed'){
+        filteredTasks = filteredTasks.filter((task) => task.completed);
+    }
+    if(currentFilter === 'pending'){
+        filteredTasks = filteredTasks.filter((task) => !task.completed);
+    }
+
+    filteredTasks.forEach((task) => {
+        tasksContainer.innerHTML += `
         <div class="task-card ${task.completed ? 'completed' : ''}">
             <h3>${task.title}</h3>
             <p>${task.description}</p>
@@ -35,14 +63,17 @@ function renderTasks(){
 
 }
 
-function updateStats(){
+tasksContainer.addEventListener("click", (event) => {
 
-    totalTasks.textContent = tasks.length;
-    const completed = tasks.filter((task) => task.completed).length;
-    completedTasks.textContent = completed;
-    pendingTasks.textContent = tasks.length - completed;
-
-}
+        if(event.target.classList.contains("complete-btn")) {
+            const taskId = Number(event.target.dataset.id);
+            toggleTask(taskId);
+        }
+        if(event.target.classList.contains("delete-btn")) {
+            const taskId = Number(event.target.dataset.id);
+            deleteTask(taskId);
+        }
+    });
 
 function deleteTask(id) {
     const updatedTasks = tasks.filter((task) => {
@@ -52,9 +83,7 @@ function deleteTask(id) {
     tasks.push(...updatedTasks);
     saveTasks();
     renderTasks();
-
 };
-
 
 function toggleTask(id){
 
@@ -66,17 +95,13 @@ function toggleTask(id){
     renderTasks();
 };
 
+function updateStats(){
 
+    totalTasks.textContent = tasks.length;
+    const completed = tasks.filter((task) => task.completed).length;
+    completedTasks.textContent = completed;
+    pendingTasks.textContent = tasks.length - completed;
 
-const taskTitle = document.getElementById("taskTitle");
-const taskDescription = document.getElementById("taskDescription");
-const taskContainer = document.getElementById("tasksContainer");
-const totalTasks = document.getElementById("totalTasks");
-const completedTasks = document.getElementById("completedTasks");
-const pendingTasks = document.getElementById("pendingTasks");
-
-function saveTasks(){
-    localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
 taskForm.addEventListener('submit', (event) => {
@@ -93,5 +118,6 @@ taskForm.addEventListener('submit', (event) => {
     taskForm.reset();
     console.log(tasks);
 });
+
 renderTasks();
 

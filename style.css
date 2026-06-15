@@ -59,7 +59,15 @@ body{
     font-weight: 700;
     color: var(--primary-color);
 }
-
+.search-section{
+    margin-bottom: 2rem;
+}
+.filters{
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
 .task-form,
 .task-list{
     background: var(--card-color);
