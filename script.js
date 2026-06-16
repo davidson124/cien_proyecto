@@ -14,6 +14,7 @@ const totalTasks = document.getElementById("totalTasks");
 const completedTasks = document.getElementById("completedTasks");
 const pendingTasks = document.getElementById("pendingTasks");
 const filterButtons = document.querySelectorAll(".filter-btn");
+const taskPriority = document.getElementById("taskPriority");
 
 searchInput.addEventListener('input', (event) => {
     searchTerm = event.target.value.toLowerCase();
@@ -47,8 +48,14 @@ function renderTasks(){
     }
 
     filteredTasks.forEach((task) => {
+
+        const priority = task.priority || 'medium';
+
         tasksContainer.innerHTML += `
         <div class="task-card ${task.completed ? 'completed' : ''}">
+        <span class="priority-badge ${priority}">
+            ${priority.toUpperCase()}
+        </span>
             <h3>${task.title}</h3>
             <p>${task.description}</p>
             <div class="task-actions">
@@ -110,6 +117,7 @@ taskForm.addEventListener('submit', (event) => {
         id: Date.now(),
         title: taskTitle.value,
         description: taskDescription.value,
+        priority: taskPriority.value,
         completed: false
     };
     tasks.push(task);

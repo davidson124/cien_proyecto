@@ -161,6 +161,36 @@ button:hover{
 .completed p{
     text-decoration: line-through;
 }
+.priority-badge{
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+}
+.high{
+    background:#ff4d4d;
+    color:white;
+}
+.medium{
+    background: #f7b731;
+    color:black;
+}
+.low{
+    background: #2ed573;
+    color:white;
+}
+.task-card.high{
+    border-left: 4px solid #ff4d4d;
+}
+.task-card.medium{
+    border-left: 4px solid #f7b731;
+}
+.task-card.low{
+    border-left: 4px solid #2ed573;
+}
 @media(max-width: 760px){
     .stats{
         grid-template-columns: 1fr;
