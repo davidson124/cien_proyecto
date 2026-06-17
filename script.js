@@ -4,6 +4,7 @@ let tasks = JSON.parse(
 
 let searchTerm = '';
 let currentFilter = 'all';
+let selectedPriority = 'medium';
 
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
@@ -14,7 +15,9 @@ const totalTasks = document.getElementById("totalTasks");
 const completedTasks = document.getElementById("completedTasks");
 const pendingTasks = document.getElementById("pendingTasks");
 const filterButtons = document.querySelectorAll(".filter-btn");
-const taskPriority = document.getElementById("taskPriority");
+const priorityButtons = document.querySelectorAll(".priority-btn");
+const taskDueDate = document.getElementById("taskDueDate");
+
 
 searchInput.addEventListener('input', (event) => {
     searchTerm = event.target.value.toLowerCase();
@@ -28,8 +31,29 @@ filterButtons.forEach((button) => {
     });
 });
 
+priorityButtons.forEach((button)=>{
+    button.addEventListener('click', ()=>{
+        priorityButtons.forEach((btn)=>{
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        selectedPriority = button.dataset.priority;
+    });
+});
+
 function saveTasks(){
     localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function getDaysRemaining(dueDate){
+    if(!dueDate) return '';
+    const today = new Date();
+    const targetDate = new Date(dueDate);
+    const difference = targetDate - today;
+    const days = Math.ceil(
+        difference / (1000 * 60 * 60 * 24)
+    );
+    return days;
 }
 
 function renderTasks(){
@@ -51,6 +75,8 @@ function renderTasks(){
 
         const priority = task.priority || 'medium';
 
+        const remainingDays = getDaysRemaining(task.dueDate);
+
         tasksContainer.innerHTML += `
         <div class="task-card ${task.completed ? 'completed' : ''}">
         <span class="priority-badge ${priority}">
@@ -58,6 +84,8 @@ function renderTasks(){
         </span>
             <h3>${task.title}</h3>
             <p>${task.description}</p>
+            <p class="due-date">🕓 ${task.dueDate || 'No due date'} </p>
+            <p class="deadline-status"> ${ !task.dueDate ? 'No deadline' : remainingDays < 0 ? 'Expired' : remainingDays === 0 ? 'Due today' : `${remainingDays} days left`} </p>
             <div class="task-actions">
                 <button class="complete-btn" data-id="${task.id}">${task.completed ? 'Undo' : 'Complete'}</button>
                 <button class="delete-btn" data-id="${task.id}">Delete</button>
@@ -117,7 +145,8 @@ taskForm.addEventListener('submit', (event) => {
         id: Date.now(),
         title: taskTitle.value,
         description: taskDescription.value,
-        priority: taskPriority.value,
+        priority: selectedPriority,
+        dueDate: taskDueDate.value,
         completed: false
     };
     tasks.push(task);

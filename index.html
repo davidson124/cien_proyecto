@@ -46,20 +46,18 @@
                     <textarea id="taskDescription" placeholder="Task Description" maxlength="200" required></textarea>
                     <button type="submit">Add Task</button>
                     <div class="form-group">
-                        <label for="taskPriority">
-                            Priority
+                        <label>Priority</label>
+                        <div class="priority-selector">
+                            <button type="button" class="priority-btn high" data-priority="high">High</button>
+                            <button type="button" class="priority-btn medium active" data-priority="medium">Medium</button>
+                            <button type="button" class="priority-btn low" data-priority="low">low</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label for="taskDueDate">
+                                Due Date
                         </label>
-                        <select id="taskPriority">
-                            <option value="high">
-                                High
-                            </option>
-                            <option value="medium">
-                                Medium
-                            </option>
-                            <option value="low">
-                                Low
-                            </option>
-                        </select>
+                        <input type="date" id="taskDueDate">
                     </div>
                 </form>
             </section>
