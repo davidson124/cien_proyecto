@@ -77,7 +77,23 @@ function renderTasks(){
 
         const remainingDays = getDaysRemaining(task.dueDate);
 
+        let deadlineClass = '';
+
+        if(!task.dueDate){
+            deadlineClass = 'no-deadline';
+        }
+        else if(remainingDays < 0){
+            deadlineClass = 'expired';
+        }
+        else if(remainingDays < 7){
+            deadlineClass = 'warning';
+        }
+        else{
+            deadlineClass = 'safe';
+        }
+
         tasksContainer.innerHTML += `
+
         <div class="task-card ${task.completed ? 'completed' : ''}">
         <span class="priority-badge ${priority}">
             ${priority.toUpperCase()}
@@ -85,7 +101,7 @@ function renderTasks(){
             <h3>${task.title}</h3>
             <p>${task.description}</p>
             <p class="due-date">🕓 ${task.dueDate || 'No due date'} </p>
-            <p class="deadline-status"> ${ !task.dueDate ? 'No deadline' : remainingDays < 0 ? 'Expired' : remainingDays === 0 ? 'Due today' : `${remainingDays} days left`} </p>
+            <p class="deadline-status ${deadlineClass}"> ${ !task.dueDate ? 'No deadline' : remainingDays < 0 ? 'Expired' : remainingDays === 0 ? 'Due today' : `${remainingDays} days left`} </p>
             <div class="task-actions">
                 <button class="complete-btn" data-id="${task.id}">${task.completed ? 'Undo' : 'Complete'}</button>
                 <button class="delete-btn" data-id="${task.id}">Delete</button>
