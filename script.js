@@ -2,8 +2,8 @@ let tasks = JSON.parse(
     localStorage.getItem('tasks')
 ) || [];
 
-let searchTerm = '';
-let currentFilter = 'all';
+let searchTerm = localStorage.getItem('searchTerm') || '';
+let currentFilter = localStorage.getItem('currentFilter') || 'all';
 let selectedPriority = 'medium';
 
 const taskForm = document.getElementById("taskForm");
@@ -21,12 +21,18 @@ const taskDueDate = document.getElementById("taskDueDate");
 
 searchInput.addEventListener('input', (event) => {
     searchTerm = event.target.value.toLowerCase();
+    localStorage.setItem(
+        'searchTerm',searchTerm
+    );
     renderTasks();
 });
 
 filterButtons.forEach((button) => {
     button.addEventListener('click', ()=>{
         currentFilter = button.dataset.filter;
+        localStorage.setItem(
+            'currentFilter', currentFilter
+        );
         renderTasks();
     });
 });
@@ -54,6 +60,17 @@ function getDaysRemaining(dueDate){
         difference / (1000 * 60 * 60 * 24)
     );
     return days;
+}
+
+function updateFilterButtons(){
+    filterButtons.forEach((button)=>{
+        button.classList.remove('active');
+        if(
+            button.dataset.filter === currentFilter
+        ){
+            button.classList.add('active');
+        }
+    });
 }
 
 function renderTasks(){
@@ -110,6 +127,8 @@ function renderTasks(){
         `;
     });
 
+    searchInput.value = searchTerm;
+    updateFilterButtons();
     updateStats();
 
 }
