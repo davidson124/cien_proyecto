@@ -3,8 +3,12 @@ let tasks = JSON.parse(
 ) || [];
 
 let searchTerm = localStorage.getItem('searchTerm') || '';
+
 let currentFilter = localStorage.getItem('currentFilter') || 'all';
+
 let selectedPriority = 'medium';
+
+let currentSort = 'newest';
 
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
@@ -17,6 +21,7 @@ const pendingTasks = document.getElementById("pendingTasks");
 const filterButtons = document.querySelectorAll(".filter-btn");
 const priorityButtons = document.querySelectorAll(".priority-btn");
 const taskDueDate = document.getElementById("taskDueDate");
+const sortTasks = document.getElementById('sortTasks');
 
 
 searchInput.addEventListener('input', (event) => {
@@ -26,6 +31,11 @@ searchInput.addEventListener('input', (event) => {
     );
     renderTasks();
 });
+
+sortTasks.addEventListener('change', (event)=>{
+    currentSort = event.target.value;
+    renderTasks();
+})
 
 filterButtons.forEach((button) => {
     button.addEventListener('click', ()=>{
@@ -86,6 +96,40 @@ function renderTasks(){
     }
     if(currentFilter === 'pending'){
         filteredTasks = filteredTasks.filter((task) => !task.completed);
+    }
+
+    if(currentSort === 'newest'){
+        filteredTasks.sort((a,b)=>{
+            return b.id - a.id;
+        });
+    }
+    if(currentSort === 'oldest'){
+        filteredTasks.sort((a,b)=>{
+            return a.id - b.id;
+        })
+    }
+    if(currentSort === 'priority'){
+        const priorityOrder = {
+            high:3,
+            medium:2,
+            low:1
+        };
+        filteredTasks.sort((a,b)=>{
+            return(
+                priorityOrder[b.priority] 
+                -
+                priorityOrder[a.priority]
+            );
+        });
+    }
+    if(currentSort === 'duedate'){
+        filteredTasks.sort((a,b)=>{
+            return(
+                new Date(a.dueDate)
+                -
+                new Date(b.dueDate)
+            );
+        });
     }
 
     filteredTasks.forEach((task) => {

@@ -206,6 +206,17 @@ button:hover.active{
     gap: 0.5rem;
     margin-bottom: 1.5rem;
 }
+select{
+    padding: .5rem;
+    color:var(--text-color);
+    letter-spacing: 0.8px;
+    font-size: 1.2rem;
+    font-weight: 400;
+    background: var(--card-color);
+    border: solid 1 px var(--primary-color);
+    border-bottom: solid 1px var(--primary-color) ;
+    cursor: pointer;
+}
 .form-group label{
     font-weight: 600;
 }
