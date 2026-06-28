@@ -8,7 +8,7 @@ let currentFilter = localStorage.getItem('currentFilter') || 'all';
 
 let selectedPriority = 'medium';
 
-let currentSort = 'newest';
+let currentSort = localStorage.getItem('currentSort') || 'newest';
 
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
@@ -23,6 +23,7 @@ const priorityButtons = document.querySelectorAll(".priority-btn");
 const taskDueDate = document.getElementById("taskDueDate");
 const sortTasks = document.getElementById('sortTasks');
 
+sortTasks.value = currentSort;
 
 searchInput.addEventListener('input', (event) => {
     searchTerm = event.target.value.toLowerCase();
@@ -34,6 +35,7 @@ searchInput.addEventListener('input', (event) => {
 
 sortTasks.addEventListener('change', (event)=>{
     currentSort = event.target.value;
+    localStorage.setItem('currentSort',currentSort);
     renderTasks();
 })
 
