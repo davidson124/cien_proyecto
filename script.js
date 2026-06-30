@@ -1,13 +1,9 @@
-let tasks = JSON.parse(
-    localStorage.getItem('tasks')
-) || [];
+/*CONFIGURACIÓN*/
 
+let tasks = JSON.parse( localStorage.getItem('tasks')) || [];
 let searchTerm = localStorage.getItem('searchTerm') || '';
-
 let currentFilter = localStorage.getItem('currentFilter') || 'all';
-
 let selectedPriority = 'medium';
-
 let currentSort = localStorage.getItem('currentSort') || 'newest';
 
 const taskForm = document.getElementById("taskForm");
@@ -22,42 +18,9 @@ const filterButtons = document.querySelectorAll(".filter-btn");
 const priorityButtons = document.querySelectorAll(".priority-btn");
 const taskDueDate = document.getElementById("taskDueDate");
 const sortTasks = document.getElementById('sortTasks');
-
 sortTasks.value = currentSort;
 
-searchInput.addEventListener('input', (event) => {
-    searchTerm = event.target.value.toLowerCase();
-    localStorage.setItem(
-        'searchTerm',searchTerm
-    );
-    renderTasks();
-});
-
-sortTasks.addEventListener('change', (event)=>{
-    currentSort = event.target.value;
-    localStorage.setItem('currentSort',currentSort);
-    renderTasks();
-})
-
-filterButtons.forEach((button) => {
-    button.addEventListener('click', ()=>{
-        currentFilter = button.dataset.filter;
-        localStorage.setItem(
-            'currentFilter', currentFilter
-        );
-        renderTasks();
-    });
-});
-
-priorityButtons.forEach((button)=>{
-    button.addEventListener('click', ()=>{
-        priorityButtons.forEach((btn)=>{
-            btn.classList.remove('active');
-        });
-        button.classList.add('active');
-        selectedPriority = button.dataset.priority;
-    });
-});
+/*UTILIDADES*/
 
 function saveTasks(){
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -74,20 +37,9 @@ function getDaysRemaining(dueDate){
     return days;
 }
 
-function updateFilterButtons(){
-    filterButtons.forEach((button)=>{
-        button.classList.remove('active');
-        if(
-            button.dataset.filter === currentFilter
-        ){
-            button.classList.add('active');
-        }
-    });
-}
+/* LOGICA DE NEGOCIO*/
 
-function renderTasks(){
-
-    tasksContainer.innerHTML = ''; 
+function getFilteredTasks(){
 
     let filteredTasks = tasks.filter((task) => {
         return task.title.toLowerCase().includes(searchTerm);
@@ -99,6 +51,11 @@ function renderTasks(){
     if(currentFilter === 'pending'){
         filteredTasks = filteredTasks.filter((task) => !task.completed);
     }
+
+    return filteredTasks;
+}
+ 
+function sortFilteredTasks(filteredTasks){
 
     if(currentSort === 'newest'){
         filteredTasks.sort((a,b)=>{
@@ -134,15 +91,17 @@ function renderTasks(){
         });
     }
 
-    filteredTasks.forEach((task) => {
+}
 
-        const priority = task.priority || 'medium';
+/*RENDERIZADO*/
 
-        const remainingDays = getDaysRemaining(task.dueDate);
+function createTaskCard(task){
 
-        let deadlineClass = '';
+    const priority = task.priority || 'medium';
+    const remainingDays = getDaysRemaining(task.dueDate);
+    let deadlineClass = '';
 
-        if(!task.dueDate){
+    if(!task.dueDate){
             deadlineClass = 'no-deadline';
         }
         else if(remainingDays < 0){
@@ -154,9 +113,7 @@ function renderTasks(){
         else{
             deadlineClass = 'safe';
         }
-
-        tasksContainer.innerHTML += `
-
+        return `
         <div class="task-card ${task.completed ? 'completed' : ''}">
         <span class="priority-badge ${priority}">
             ${priority.toUpperCase()}
@@ -171,25 +128,36 @@ function renderTasks(){
             </div>
         </div>
         `;
-    });
-
-    searchInput.value = searchTerm;
-    updateFilterButtons();
-    updateStats();
-
 }
 
-tasksContainer.addEventListener("click", (event) => {
+function renderTaskCards(filteredtasks){
+    const taskCards = filteredtasks.map(createTaskCard);
+    tasksContainer.innerHTML = taskCards.join('');
+}
 
-        if(event.target.classList.contains("complete-btn")) {
-            const taskId = Number(event.target.dataset.id);
-            toggleTask(taskId);
-        }
-        if(event.target.classList.contains("delete-btn")) {
-            const taskId = Number(event.target.dataset.id);
-            deleteTask(taskId);
+function updateSearchInput(){
+    searchInput.value = searchTerm;
+}
+
+function updateFilterButtons(){
+    filterButtons.forEach((button)=>{
+        button.classList.remove('active');
+        if(
+            button.dataset.filter === currentFilter
+        ){
+            button.classList.add('active');
         }
     });
+}
+
+function updateStats(){
+    totalTasks.textContent = tasks.length;
+    const completed = tasks.filter((task) => task.completed).length;
+    completedTasks.textContent = completed;
+    pendingTasks.textContent = tasks.length - completed;
+}
+
+/* MANIPULACIÓN DE DATOS */
 
 function deleteTask(id) {
     const updatedTasks = tasks.filter((task) => {
@@ -202,7 +170,6 @@ function deleteTask(id) {
 };
 
 function toggleTask(id){
-
     const task = tasks.find((task) => task.id === id);
     if(task){
         task.completed = !task.completed;
@@ -211,14 +178,53 @@ function toggleTask(id){
     renderTasks();
 };
 
-function updateStats(){
+/*EVENTOS*/
 
-    totalTasks.textContent = tasks.length;
-    const completed = tasks.filter((task) => task.completed).length;
-    completedTasks.textContent = completed;
-    pendingTasks.textContent = tasks.length - completed;
+searchInput.addEventListener('input', (event) => {
+    searchTerm = event.target.value.toLowerCase();
+    localStorage.setItem(
+        'searchTerm',searchTerm
+    );
+    renderTasks();
+});
 
-}
+sortTasks.addEventListener('change', (event)=>{
+    currentSort = event.target.value;
+    localStorage.setItem('currentSort',currentSort);
+    renderTasks();
+})
+
+filterButtons.forEach((button) => {
+    button.addEventListener('click', ()=>{
+        currentFilter = button.dataset.filter;
+        localStorage.setItem(
+            'currentFilter', currentFilter
+        );
+        renderTasks();
+    });
+});
+
+priorityButtons.forEach((button)=>{
+    button.addEventListener('click', ()=>{
+        priorityButtons.forEach((btn)=>{
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        selectedPriority = button.dataset.priority;
+    });
+});
+
+tasksContainer.addEventListener("click", (event) => {
+
+        if(event.target.classList.contains("complete-btn")) {
+            const taskId = Number(event.target.dataset.id);
+            toggleTask(taskId);
+        }
+        if(event.target.classList.contains("delete-btn")) {
+            const taskId = Number(event.target.dataset.id);
+            deleteTask(taskId);
+        }
+});
 
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -237,5 +243,17 @@ taskForm.addEventListener('submit', (event) => {
     console.log(tasks);
 });
 
-renderTasks();
+/* INICIALIZACIÓN*/
 
+function renderTasks(){
+
+    tasksContainer.innerHTML = ''; 
+
+    let filteredTasks = getFilteredTasks();
+    sortFilteredTasks(filteredTasks);
+    renderTaskCards(filteredTasks);
+    updateSearchInput();
+    updateFilterButtons();
+    updateStats();
+}
+renderTasks();
