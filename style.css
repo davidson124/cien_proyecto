@@ -157,6 +157,9 @@ button:hover.active{
     opacity: .7;
     border-left: 4px solid var(--success-color);
 }
+.hidden{
+    display: none;
+}
 .completed h3,
 .completed p{
     text-decoration: line-through;

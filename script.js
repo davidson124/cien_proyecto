@@ -5,6 +5,7 @@ let searchTerm = localStorage.getItem('searchTerm') || '';
 let currentFilter = localStorage.getItem('currentFilter') || 'all';
 let selectedPriority = 'medium';
 let currentSort = localStorage.getItem('currentSort') || 'newest';
+let editingTaskId = null;
 
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
@@ -18,6 +19,9 @@ const filterButtons = document.querySelectorAll(".filter-btn");
 const priorityButtons = document.querySelectorAll(".priority-btn");
 const taskDueDate = document.getElementById("taskDueDate");
 const sortTasks = document.getElementById('sortTasks');
+const submitButton = document.getElementById('submitButton');
+const cancelEditButton = document.getElementById('cancelEditButton');
+cancelEditButton.classList.add('hidden');
 sortTasks.value = currentSort;
 
 /*UTILIDADES*/
@@ -125,6 +129,7 @@ function createTaskCard(task){
             <div class="task-actions">
                 <button class="complete-btn" data-id="${task.id}">${task.completed ? 'Undo' : 'Complete'}</button>
                 <button class="delete-btn" data-id="${task.id}">Delete</button>
+                <button class="edit-btn" data-id="${task.id}">Edit</button>
             </div>
         </div>
         `;
@@ -157,7 +162,58 @@ function updateStats(){
     pendingTasks.textContent = tasks.length - completed;
 }
 
+function setSelectedPriority(priority){
+    priorityButtons.forEach((button)=>{
+        button.classList.remove('active');
+        if(button.dataset.priority === priority){
+            button.classList.add('active');
+        }
+    });
+    selectedPriority = priority;
+}
+
 /* MANIPULACIÓN DE DATOS */
+
+function startEditing(taskId){
+    const task = tasks.find((task)=>{
+        return task.id === taskId;
+        if(!task){
+            return;
+        }
+    });
+    taskTitle.value = task.title;
+    taskDescription.value = task.description;
+    taskDueDate.value = task.dueDate;
+    setSelectedPriority(task.priority);
+    editingTaskId = task.id;
+    submitButton.textContent = 'Save changes';
+    cancelEditButton.classList.remove('hidden');
+}
+
+function resetFormState(){
+    taskForm.reset();
+    editingTaskId = null;
+    submitButton.textContent = 'Add Task';
+    setSelectedPriority('medium');
+    cancelEditButton.classList.add('hidden');
+}
+
+function updateTask(){
+    const task = tasks.find((task)=>{
+        return task.id === editingTaskId;
+    })
+    if(!task){
+            return;
+    }
+    task.title = taskTitle.value;
+    task.description = taskDescription.value;
+    task.priority = selectedPriority;
+    task.dueDate = taskDueDate.value;
+
+    saveTasks();
+    renderTasks();
+    resetFormState();
+}
 
 function deleteTask(id) {
     const updatedTasks = tasks.filter((task) => {
@@ -206,13 +262,13 @@ filterButtons.forEach((button) => {
 
 priorityButtons.forEach((button)=>{
     button.addEventListener('click', ()=>{
-        priorityButtons.forEach((btn)=>{
-            btn.classList.remove('active');
-        });
-        button.classList.add('active');
-        selectedPriority = button.dataset.priority;
+       setSelectedPriority(button.dataset.priority);
     });
 });
+
+cancelEditButton.addEventListener('click', () =>{
+    resetFormState();
+})
 
 tasksContainer.addEventListener("click", (event) => {
 
@@ -224,10 +280,18 @@ tasksContainer.addEventListener("click", (event) => {
             const taskId = Number(event.target.dataset.id);
             deleteTask(taskId);
         }
+        if(event.target.classList.contains('edit-btn')){
+            const taskId = Number(event.target.dataset.id );
+            startEditing(taskId);
+        }
 });
 
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
+    if(editingTaskId !== null){
+        updateTask();
+        return;
+    }
     const task = {
         id: Date.now(),
         title: taskTitle.value,
@@ -236,10 +300,10 @@ taskForm.addEventListener('submit', (event) => {
         dueDate: taskDueDate.value,
         completed: false
     };
-    tasks.push(task);
     saveTasks();
     renderTasks();
-    taskForm.reset();
+    tasks.push(task);
+    resetFormState();
     console.log(tasks);
 });
 
