@@ -12,8 +12,9 @@
     --secondary-text:#CBD5E1;
     --success-color:#22C55E;
     --danger-color:#EF4444;
+    --warning-color:#F59E0B;
     --border-radius: 16px;
-    --shadow: 0 10px 25px rgba(139, 92, 220, 0.10);
+    --shadow: 0 10px 25px rgba(139, 92, 220, 0.25);
 }
 body{
     font-family: 'Poppins', sans-serif;
@@ -239,7 +240,7 @@ select{
     opacity: .5;
 }
 .priority-btn.active{
-    opacity: 1;
+    opacity: 1; 
     transform:scale(1.05);
 }
 .priority-btn.high{
@@ -253,7 +254,74 @@ select{
 .priority-btn.low{
     background: #2ed573;
     color: var(--text-color);
+}#confirmationModal,
+#toast{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    inset: 0;
+    position: fixed;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
+.modal-content,
+.toast-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    width:min(90%,450px);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    background: var(--card-color);
+    text-align: center;
+    box-shadow: 0 10px 25px var(--primary-color);;
+    color: var(--text-color);
+}
+#toast.success .toast-content{
+    box-shadow: 0 10px 25px var(--success-color);
+    font-size: 1.5rem;
+}
+#toast.error .toast-content{
+    box-shadow: 0 10px 25px var(--danger-color);
+    font-size: 1.5rem;
+}
+#toast.warning .toast-content{
+    box-shadow: 0 10px 25px var(--warning-color);
+    font-size: 1.5rem;
+}
+#toast.info .toast-content{
+    box-shadow: 0 10px 25px var(--primary-color);
+    font-size: 1.5rem;
+}
+#toastIcon{
+    width: 50px;
+    height: 50px;
+}
+#confirmationModal.show,
+#toast.show{
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}   
+.modal-actions{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+#modalCancelBtn{
+    background: var(--danger-color);
+    border: solid 1px var(--text-color);
+}
+#modalConfirmBtn{
+    background: var(--success-color);
+    border: solid 1px var(--text-color);
+}
+
 @media(max-width: 760px){
     .stats{
         grid-template-columns: 1fr;

@@ -1,4 +1,4 @@
-/*CONFIGURACIÓN*/
+/*-------------------------CONFIGURACIÓN------------------------------*/
 
 let tasks = JSON.parse( localStorage.getItem('tasks')) || [];
 let searchTerm = localStorage.getItem('searchTerm') || '';
@@ -6,6 +6,8 @@ let currentFilter = localStorage.getItem('currentFilter') || 'all';
 let selectedPriority = 'medium';
 let currentSort = localStorage.getItem('currentSort') || 'newest';
 let editingTaskId = null;
+let toastTimer = null;
+let confirmAction = null;
 
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
@@ -21,10 +23,28 @@ const taskDueDate = document.getElementById("taskDueDate");
 const sortTasks = document.getElementById('sortTasks');
 const submitButton = document.getElementById('submitButton');
 const cancelEditButton = document.getElementById('cancelEditButton');
+const toast = document.getElementById('toast');
+const toastContent = document.querySelector('.toast-content');
+const toastIcon = document.getElementById('toastIcon');
+const toastMessage = document.getElementById('toastMessage');
+const toastCloseBtn = document.getElementById('toastCloseBtn');
+const toastProgress = document.getElementById('toastProgress');
+const confirmationModal = document.getElementById('confirmationModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalMessage = document.getElementById('modalMessage');
+const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+const modalCancelBtn = document.getElementById('modalCancelBtn');
+const toastConfig = {
+    success: { icon: "./asssets/icons/success.png", alt: "Success", duration:3000 },
+    error: { icon: "./asssets/icons/error.svg", alt: "Error", duration:5000 },
+    Warning: { icon: "./asssets/icons/warning.svg", alt: "Warning", duration:5000 },
+    info: { icon: "./asssets/icons/info.svg", alt: "Information", duration:4000 }
+};
+
 cancelEditButton.classList.add('hidden');
 sortTasks.value = currentSort;
 
-/*UTILIDADES*/
+/*-------------------UTILIDADES---------------------------------------------*/
 
 function saveTasks(){
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -41,7 +61,7 @@ function getDaysRemaining(dueDate){
     return days;
 }
 
-/* LOGICA DE NEGOCIO*/
+/* -----------------LOGICA DE NEGOCIO-------------------------------------*/
 
 function getFilteredTasks(){
 
@@ -97,7 +117,7 @@ function sortFilteredTasks(filteredTasks){
 
 }
 
-/*RENDERIZADO*/
+/*--------------------------RENDERIZADO-----------------------------------*/
 
 function createTaskCard(task){
 
@@ -172,7 +192,7 @@ function setSelectedPriority(priority){
     selectedPriority = priority;
 }
 
-/* MANIPULACIÓN DE DATOS */
+/* --------------------------MANIPULACIÓN DE DATOS ----------------------------*/
 
 function startEditing(taskId){
     const task = tasks.find((task)=>{
@@ -213,6 +233,7 @@ function updateTask(){
     saveTasks();
     renderTasks();
     resetFormState();
+    showToast("Task updated successfully!", "success");
 }
 
 function deleteTask(id) {
@@ -223,6 +244,7 @@ function deleteTask(id) {
     tasks.push(...updatedTasks);
     saveTasks();
     renderTasks();
+    showToast("Task deleted successfully!", "success");
 };
 
 function toggleTask(id){
@@ -232,9 +254,73 @@ function toggleTask(id){
     }
     saveTasks();
     renderTasks();
+    showToast(task.completed ? "Task marked as completed!" : "Task marked as pending!", task.completed ? "success" : "warning");
 };
 
-/*EVENTOS*/
+/* ------------------------- NOTIFICATIONS ------------------------------------------------------------------------------------------*/
+
+function showToast(message, type){
+
+    const config = toastConfig[type];
+
+    updateToastContent(message, config);
+    updateToastType(type);
+    showToastUI();
+    startToastTimer(config.duration);
+}
+
+function updateToastContent(message, config){
+    toastMessage.textContent = message;
+    toastIcon.src = config.icon;
+    toastIcon.alt = config.alt;
+}
+
+function updateToastType(type){
+    toast.classList.remove(
+        "success",
+        "error",
+        "warning",
+        "info"
+    )
+    toast.classList.add(type)
+} 
+
+function showToastUI(){
+    toast.classList.add('show');
+}
+
+function hideToastUI(){
+    toast.classList.remove('show');
+}
+
+function startToastTimer(duration){
+    if(toastTimer){
+        clearTimeout(toastTimer);
+    }
+    toastTimer = setTimeout(()=>{
+        hideToastUI();
+    }, duration);
+}
+
+function openConfirmationModal(title, message, action){
+    
+    confirmationModal.classList.add('show');
+
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    confirmAction = action;
+}
+
+function closeConfirmationModal(){
+    
+    modalTitle.textContent = '';
+    modalMessage.textContent = '';
+    confirmAction = null;
+
+    confirmationModal.classList.remove('show');
+}
+
+/*-----------------------EVENTOS........................................*/
 
 searchInput.addEventListener('input', (event) => {
     searchTerm = event.target.value.toLowerCase();
@@ -248,7 +334,7 @@ sortTasks.addEventListener('change', (event)=>{
     currentSort = event.target.value;
     localStorage.setItem('currentSort',currentSort);
     renderTasks();
-})
+});
 
 filterButtons.forEach((button) => {
     button.addEventListener('click', ()=>{
@@ -268,8 +354,19 @@ priorityButtons.forEach((button)=>{
 
 cancelEditButton.addEventListener('click', () =>{
     resetFormState();
-})
+});
 
+modalConfirmBtn.addEventListener('click', ()=>{
+    if(confirmAction){
+        confirmAction();
+    }
+    closeConfirmationModal();
+});
+
+modalCancelBtn.addEventListener('click', ()=>{
+    closeConfirmationModal();
+});
+console.log(modalConfirmBtn);
 tasksContainer.addEventListener("click", (event) => {
 
         if(event.target.classList.contains("complete-btn")) {
@@ -278,7 +375,10 @@ tasksContainer.addEventListener("click", (event) => {
         }
         if(event.target.classList.contains("delete-btn")) {
             const taskId = Number(event.target.dataset.id);
-            deleteTask(taskId);
+            openConfirmationModal(
+                "Delete Task",
+                "Are you sure you want to delete this task?",
+                () => deleteTask(taskId));
         }
         if(event.target.classList.contains('edit-btn')){
             const taskId = Number(event.target.dataset.id );
@@ -289,7 +389,13 @@ tasksContainer.addEventListener("click", (event) => {
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
     if(editingTaskId !== null){
-        updateTask();
+        openConfirmationModal(
+            "Update Task",
+            "Are you sure you want to update this task?",
+            () => {
+                updateTask();
+            }
+        );
         return;
     }
     const task = {
@@ -303,11 +409,13 @@ taskForm.addEventListener('submit', (event) => {
     saveTasks();
     renderTasks();
     tasks.push(task);
+    showToast("Task added successfully!", "success");
     resetFormState();
     console.log(tasks);
 });
 
-/* INICIALIZACIÓN*/
+/* ---------------------INICIALIZACIÓN------------------------------------------------*/
+
 
 function renderTasks(){
 
@@ -320,4 +428,7 @@ function renderTasks(){
     updateFilterButtons();
     updateStats();
 }
+
+showToast("Toast component ready!", "success");
+
 renderTasks();
