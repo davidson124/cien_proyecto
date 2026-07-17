@@ -9,6 +9,8 @@ let editingTaskId = null;
 let toastTimer = null;
 let confirmAction = null;
 
+const taskFormTitle = document.getElementById("taskFormTitle");
+const taskFormSecction = document.querySelector(".task-form");
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
 const taskDescription = document.getElementById("taskDescription");
@@ -207,7 +209,13 @@ function startEditing(taskId){
     setSelectedPriority(task.priority);
     editingTaskId = task.id;
     submitButton.textContent = 'Save changes';
+    taskFormTitle.textContent = 'Edit Your Task';
     cancelEditButton.classList.remove('hidden');
+    taskFormSecction.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    });
+    taskTitle.focus();
 }
 
 function resetFormState(){
