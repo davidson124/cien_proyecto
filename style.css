@@ -283,19 +283,19 @@ select{
     color: var(--text-color);
 }
 #toast.success .toast-content{
-    box-shadow: 0 10px 25px var(--success-color);
+    box-shadow: 0 5px 5px var(--success-color);
     font-size: 1.5rem;
 }
 #toast.error .toast-content{
-    box-shadow: 0 10px 25px var(--danger-color);
+    box-shadow: 0 5px 5px var(--danger-color);
     font-size: 1.5rem;
 }
 #toast.warning .toast-content{
-    box-shadow: 0 10px 25px var(--warning-color);
+    box-shadow: 0 5px 5px var(--warning-color);
     font-size: 1.5rem;
 }
 #toast.info .toast-content{
-    box-shadow: 0 10px 25px var(--primary-color);
+    box-shadow: 0 5px 5px var(--primary-color);
     font-size: 1.5rem;
 }
 #toastIcon{

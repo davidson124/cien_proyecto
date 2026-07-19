@@ -37,10 +37,10 @@ const modalMessage = document.getElementById('modalMessage');
 const modalConfirmBtn = document.getElementById('modalConfirmBtn');
 const modalCancelBtn = document.getElementById('modalCancelBtn');
 const toastConfig = {
-    success: { icon: "./asssets/icons/success.png", alt: "Success", duration:3000 },
-    error: { icon: "./asssets/icons/error.svg", alt: "Error", duration:5000 },
-    Warning: { icon: "./asssets/icons/warning.svg", alt: "Warning", duration:5000 },
-    info: { icon: "./asssets/icons/info.svg", alt: "Information", duration:4000 }
+    success: { icon: "./asssets/icons/success.png", alt: "Success", duration:1500 },
+    error: { icon: "./asssets/icons/error.png", alt: "Error", duration:3500 },
+    warning: { icon: "./asssets/icons/warning.png", alt: "Warning", duration:3500 },
+    info: { icon: "./asssets/icons/info.png", alt: "Information", duration:4000 }
 };
 
 cancelEditButton.classList.add('hidden');
@@ -222,6 +222,7 @@ function resetFormState(){
     taskForm.reset();
     editingTaskId = null;
     submitButton.textContent = 'Add Task';
+    taskFormTitle.textContent = 'Add New Tasks';
     setSelectedPriority('medium');
     cancelEditButton.classList.add('hidden');
 }
@@ -437,6 +438,6 @@ function renderTasks(){
     updateStats();
 }
 
-showToast("Toast component ready!", "success");
+showToast("Toast component ready!", "error");
 
 renderTasks();
