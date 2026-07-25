@@ -240,7 +240,7 @@ function updateTask(){
     task.dueDate = taskDueDate.value;
 
     saveTasks();
-    renderTasks();
+    updateUI();
     resetFormState();
     showToast("Task updated successfully!", "success");
 }
@@ -252,7 +252,7 @@ function deleteTask(id) {
     tasks.length = 0; 
     tasks.push(...updatedTasks);
     saveTasks();
-    renderTasks();
+    updateUI();
     showToast("Task deleted successfully!", "success");
 };
 
@@ -262,7 +262,7 @@ function toggleTask(id){
         task.completed = !task.completed;
     }
     saveTasks();
-    renderTasks();
+    updateUI();
     showToast(task.completed ? "Task marked as completed!" : "Task marked as pending!", task.completed ? "success" : "warning");
 };
 
@@ -336,13 +336,13 @@ searchInput.addEventListener('input', (event) => {
     localStorage.setItem(
         'searchTerm',searchTerm
     );
-    renderTasks();
+    updateUI();
 });
 
 sortTasks.addEventListener('change', (event)=>{
     currentSort = event.target.value;
     localStorage.setItem('currentSort',currentSort);
-    renderTasks();
+    updateUI();
 });
 
 filterButtons.forEach((button) => {
@@ -351,7 +351,7 @@ filterButtons.forEach((button) => {
         localStorage.setItem(
             'currentFilter', currentFilter
         );
-        renderTasks();
+        updateUI();
     });
 });
 
@@ -416,7 +416,7 @@ taskForm.addEventListener('submit', (event) => {
         completed: false
     };
     saveTasks();
-    renderTasks();
+    updateUI();
     tasks.push(task);
     showToast("Task added successfully!", "success");
     resetFormState();
@@ -426,7 +426,7 @@ taskForm.addEventListener('submit', (event) => {
 /* ---------------------INICIALIZACIÓN------------------------------------------------*/
 
 
-function renderTasks(){
+function updateUI(){
 
     tasksContainer.innerHTML = ''; 
 
@@ -440,4 +440,4 @@ function renderTasks(){
 
 showToast("Toast component ready!", "error");
 
-renderTasks();
+updateUI();
